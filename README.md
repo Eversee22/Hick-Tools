@@ -1,2 +1,2 @@
 # Hick-Tools
-some network tools on windows
+some network tools on linux, windows
