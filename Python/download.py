@@ -46,6 +46,10 @@ with open(urlf,'r') as f:
 				print('###socket timed out - URL %s###'%(url))
 			else:
 				print('####some other error happened\n%s####'%(error))
+		except ConnectionResetError as error:
+				print('#####Connection reset - URL %s#####'%(url))
+		except Exception as error:
+				print('*unknown error:\n%s*'%(error))
 		print()
 		#print('over, spend time {:.3f}'.format(time.time()-start)) 
 	end_dw = time.time()	
