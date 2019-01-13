@@ -20,6 +20,7 @@ def reporthook(bnum,size,totsize):
 	perc = 100 * bnum * size / totsize
 	print('%.2f%%' % perc )
 
+count = 0
 with open(urlf,'r') as f:
 	start_dw = time.time()
 	for line in f:
@@ -28,7 +29,8 @@ with open(urlf,'r') as f:
 		if IGNORE_EXISTF and fname in existf:
 			print('%s already exists, skip\n' % (fname))
 			continue
-		print('download file:{}'.format(fname))
+		count += 1
+		print('[{1}] download file:{0}'.format(fname,count))
 		start = time.time()
 		try:
 			r = request.urlopen(url, timeout=timeout)
