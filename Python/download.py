@@ -8,7 +8,8 @@ path = 'IMAGES/'
 if not os.path.exists(path):
 	os.mkdirs(path)
 IGNORE_EXISTF = True
-existf = [f for f in os.listdir(path)]
+if IGNORE_EXISTF:
+	existf = [f for f in os.listdir(path)]
 
 urlf = 'urls_.txt'
 timeout = 10
@@ -41,17 +42,8 @@ with open(urlf,'r') as f:
 			of.close()
 			r.close()
 			print('#over, successful#')
-		except HTTPError as error:
-			print('##Data of %s not retrieved because %s\nURL: %s##'%(fname, error, url))
-		except URLError as error:
-			if isinstance(error.reason, socket.timeout):
-				print('###socket timed out - URL %s###'%(url))
-			else:
-				print('####some other error happened\n%s####'%(error))
-		except ConnectionResetError as error:
-				print('#####Connection reset - URL %s#####'%(url))
 		except Exception as error:
-				print('*unknown error:\n%s*'%(error))
+				print('##error:%s - URL:%s##'%(error,url))
 		print()
 		#print('over, spend time {:.3f}'.format(time.time()-start)) 
 	end_dw = time.time()	
