@@ -53,36 +53,36 @@ void read_socket()
 
 void writemail()
 {
-	int count = 0;
-	char c, n;
-	printf("mail content(end with :q):\n");
-	while(count<MAXML){
-	  c = getchar();
-	  if(c==':'){
-		n = getchar();
-	    if(n == 'q')
-		  break;
-	    else{
-		  mc[count++] = c;
-		  mc[count++] = n;
-	    }
-	  }else{
-	    mc[count++] = c;
-	  }
-	}
-	mc[count++]='\r';
-	mc[count++]='\n';
-	mc[count++]='\0';
+        int count = 0;
+        char c, n;
+        printf("mail content(end with :q):\n");
+        while(count<MAXML){
+          c = getchar();
+          if(c==':'){
+                n = getchar();
+            if(n == 'q')
+                  break;
+            else{
+                  mc[count++] = c;
+                  mc[count++] = n;
+            }
+          }else{
+            mc[count++] = c;
+          }
+        }
+        mc[count++]='\r';
+        mc[count++]='\n';
+        mc[count++]='\0';
 }
-	   
+           
 /*=====MAIN=====*/
 int main(int argc, char* argv[])
-{	
-		if(argc>=2)
-          to_id = argv[1];
+{       
+       if(argc>=2)
+           to_id = argv[1];
 
-		writemail();
-	  
+        writemail();
+          
         /*=====Create Socket=====*/
         sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -129,16 +129,16 @@ int main(int argc, char* argv[])
         read_socket(); /*Read reply */
 
         //LOGIN
-		send_socket("AUTH LOGIN");
-		send_socket("\r\n");
-		read_socket();
-		send_socket(user);
-		send_socket("\r\n");
-		read_socket();
-		send_socket(pass);
-		send_socket("\r\n");
-		read_socket(); /*Authentication OK*/
-	
+        send_socket("AUTH LOGIN");
+        send_socket("\r\n");
+        read_socket();
+        send_socket(user);
+        send_socket("\r\n");
+        read_socket();
+        send_socket(pass);
+        send_socket("\r\n");
+        read_socket(); /*Authentication OK*/
+        
         //send_socket("STARTTLS\n");
        
         send_socket("MAIL FROM: ");
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
         send_socket("Subject: ");
         send_socket(sub);
         //read_socket(); 
-	send_socket("From: ");
+        send_socket("From: ");
         send_socket(from);
         //read_socket(); 
         send_socket("To: ");
