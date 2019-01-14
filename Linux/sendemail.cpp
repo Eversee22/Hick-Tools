@@ -13,6 +13,7 @@ using namespace std;
 #define DATA "DATA\r\n" 
 #define QUIT "QUIT\r\n" 
 #define MAXML 1000
+#define BUFSIZ 256
 
 //#define h_addr h_addr_list[0] 
 //FILE *fin; 
@@ -21,15 +22,15 @@ struct sockaddr_in server;
 struct hostent *hp, *gethostbyname(); 
 char buf[BUFSIZ+1]; 
 int len; 
-char *user="c2VjQGNsb3VkYS5jb20=";
-char *pass="YXNkZmdoNDU2";
-char *host_id=/*"smtp.gmail.com"*/"172.96.211.103";  //192.168.1.10"; 
-char *from_id=/*"caiss.cuny@gmail.com"*/"blacksun"; 
-char *to_id=/*"quaere1verum@gmail.com"*/"2071263070@qq.com"; 
-char *sub="miss\r\n";
-char *from="a nonexistent human\r\n"; 
-char *rcp="cute you\r\n";
-char wkstr[100]="how are u? I miss you so much ever.\r\n";
+char *user="BASE64";
+char *pass="BASE64";
+char *host_id="smtp.gmail.com"; 
+char *from_id="caiss.cuny@gmail.com"; 
+char *to_id="quaere1verum@gmail.com"; 
+char *sub="Hi\r\n";
+char *from="human\r\n"; 
+char *rcp="you\r\n";
+//char wkstr[100]="how are u? I miss you so much.\r\n";
 char mc[MAXML+3];
  
 /*=====Send a string to the socket=====*/ 
