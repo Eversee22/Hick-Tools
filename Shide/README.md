@@ -1,0 +1,1 @@
+Encoding files in .shid format.
