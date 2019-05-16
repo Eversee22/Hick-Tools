@@ -1,2 +1,2 @@
 # Hick-Tools
-some network tools
+some hick tools
