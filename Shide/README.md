@@ -1,1 +1,1 @@
-Encoding files in .shid format
+Encoding file  to ".shid" format
