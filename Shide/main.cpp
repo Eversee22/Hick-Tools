@@ -1,8 +1,10 @@
-#include"cf.h"
-#include<iostream>
+#include "cf.h"
+#include <iostream>
 
 #define MAXPL 256
 #define PARAMNUM 3
+
+
 
 typedef union {
 	char name[MAXPL];
@@ -52,7 +54,7 @@ void argparser(int argc, char** argv, Param* params) {
 			}
 		}
 		else {
-			strcpy_s(params[FNAME].name, argv[i]);
+			STRCPY(params[FNAME].name, argv[i]);
 		}
 	}
 }

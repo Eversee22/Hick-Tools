@@ -1,8 +1,15 @@
-#pragma once
-#include"hfc.h"
-#include<stdio.h>
-#include<string>
-//#include<fstream>
+#ifndef CF_H
+#define CF_H
+
+#ifdef VS
+#define STRCPY(d,s) strcpy_s((d),(s))
+#else
+#define STRCPY(d,s) strcpy((d),(s))
+#endif
+
+#include "hfc.h"
+#include <stdio.h>
+#include <string>
 
 #define DEBUG 0
 #define MASK 0xF0F0
@@ -15,22 +22,29 @@ char* readf(const char* filename, unsigned int weights[]) {
 	//unsigned fsize;
 	char* buffer;
 	size_t n;
-	errno_t err;
-
 	for (int i = 0; i < 256; ++i)
 		weights[i] = 0;
 
+#ifdef VS
+    errno_t err;
 	err = fopen_s(&pFile, filename, "rb");
 	if (err) {
 		printf("open file %s failed\n", filename);
-		exit(0);
+		exit(1);
 	}
+#else
+	pFile = fopen(filename,"rb");
+    if (!pFile) {
+        printf("open file %s failed\n", filename);
+        exit(1);
+    }
+#endif
 	fseek(pFile, 0, SEEK_END);
 	read_fsize = ftell(pFile);
 	rewind(pFile);
 
 	if(DEBUG)
-		printf("file size:%d bytes\n", read_fsize);
+		printf("file size: %d bytes\n", read_fsize);
 
 	buffer = (char*)malloc(sizeof(char)*read_fsize);
 	if (buffer == NULL) {
@@ -41,7 +55,8 @@ char* readf(const char* filename, unsigned int weights[]) {
 	n = fread(buffer, 1, read_fsize, pFile);
 	if (n != read_fsize) {
 		printf("reading error\n");
-		exit(2);
+		free(buffer);
+		exit(1);
 	}
 	
 	for (unsigned i = 0; i < read_fsize; ++i) {
@@ -62,20 +77,29 @@ char* readf(const char* filename, unsigned int weights[]) {
 
 void coding(const char* filename, char* buffer, HuffmanTree ht, HuffmanCode hc,short int n) {
 	FILE* pF;
-	errno_t err;
-
+#ifdef VS
+    errno_t err;
 	err = fopen_s(&pF, filename, "wb");
 	if (err) {
 		printf("open file %s error\n", filename);
 		exit(0);
 	}
-
+#else
+	pF = fopen(filename,"wb");
+    if (!pF) {
+        printf("open file %s error\n", filename);
+        exit(0);
+    }
+#endif
 	int m = 2 * n - 1;
 	unsigned char byc = 0;
 	unsigned char zero = 0;
 	unsigned char r = 0;
 	unsigned int countbytes = 0;
 	unsigned int shidsize = 0;
+    unsigned char fmtlen = org_fname.size();
+    char* fname = (char*)malloc(sizeof(char)*(fmtlen + 1));
+    const char* orgfname = org_fname.c_str();
 
 	//size_t found = org_fname.find_last_of(".");
 	//std::string fmt = org_fname.substr(found + 1);
@@ -84,10 +108,7 @@ void coding(const char* filename, char* buffer, HuffmanTree ht, HuffmanCode hc,s
 		FLAG[i] = FLAG[i] ^ MASK;
 	}
 	fwrite(FLAG, sizeof(char), 4, pF);
-	unsigned char fmtlen = org_fname.size();
 	fwrite(&fmtlen, sizeof(char), 1, pF);
-	char* fname = (char*)malloc(sizeof(char)*(fmtlen + 1));
-	const char* orgfname = org_fname.c_str();
 	for (int i = 0; i < fmtlen; ++i) {
 		fname[i] = orgfname[i] ^ MASK;
 	}
@@ -112,8 +133,7 @@ void coding(const char* filename, char* buffer, HuffmanTree ht, HuffmanCode hc,s
 		}
 
 		size_t len = strlen(hc[j]);
-		strcpy_s(coding, hc[j]);
-
+		STRCPY(coding, hc[j]);
 		if (zero) {
 			if (len >= zero) {
 				
@@ -185,15 +205,20 @@ void coding(const char* filename, char* buffer, HuffmanTree ht, HuffmanCode hc,s
 
 void decoding(const char* filename) {
 	FILE* pF;
+#ifdef VS
 	errno_t err;
-
 	err = fopen_s(&pF, filename, "rb");
 	if (err) {
 		printf("open file %s error\n", filename);
 		exit(0);
 	}
-
-	
+#else
+	pF = fopen(filename,"rb");
+    if (!pF) {
+        printf("open file %s error\n", filename);
+        exit(0);
+    }
+#endif
 	short int n;
 	unsigned char fmtlen;
 	char* fmt;
@@ -258,14 +283,21 @@ void decoding(const char* filename) {
 		printf("\n");
 	}
 	FILE* depF;
-	std::string defn = std::string("outshid");
-	err = fopen_s(&depF,(defn+"."+fmt).c_str(),"wb");
-	free(fmt);
+	std::string defn = std::string("outshid")+"."+fmt;
+    free(fmt);
+#ifdef VS
+	err = fopen_s(&depF,defn.c_str(),"wb");
 	if (err) {
-		printf("open file %s error\n", filename);
+		printf("open file %s error\n", defn.c_str());
 		exit(0);
 	}
-	
+#else
+	depF = fopen(defn.c_str(),"wb");
+	if(!depF){
+        printf("open file %s error\n", defn.c_str());
+        exit(0);
+	}
+#endif
 	int p;
 	unsigned char c;
 	unsigned char result;
@@ -409,6 +441,7 @@ void bytesCoding(const char* filename) {
 		}
 		free(hc);
 	}
-	
 
 }
+
+#endif
