@@ -8,11 +8,19 @@ import mimetypes
 import re
 import platform
 import socket
+import argparse
 # import importlib
 
 __version__ = '1.0'
 osType = platform.system()
 charencoding = 'gbk'
+
+def parse_arg():
+	arg_parser = argparse.ArgumentParser()
+	arg_parser.add_argument('-p', dest='port', help='port', default=8321, type=int)
+	arg_parser.add_argument('--root_dir', dest='root_dir', help='root dir', default='./')
+	
+	return arg_parser.parse_args()
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 	
@@ -266,10 +274,13 @@ def get_ip_address():
 	return myip
 
 
+args = parse_arg()
+root_dir = args.root_dir
+port = args.port
 myip = get_ip_address()
-port = 8321
 serve_addr = ('', port)
 
+os.chdir(root_dir)
 httpd = ThreadingServer(serve_addr, SimpleHTTPRequestHandler)
 print('Listening ...', 'http://{}:{}'.format(myip, port))
 httpd.serve_forever()		
