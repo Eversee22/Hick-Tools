@@ -18,7 +18,7 @@ charencoding = 'gbk'
 def parse_arg():
 	arg_parser = argparse.ArgumentParser()
 	arg_parser.add_argument('-p', dest='port', help='port', default=8321, type=int)
-	arg_parser.add_argument('--root_dir', dest='root_dir', help='root dir', default='./')
+	arg_parser.add_argument('--root-dir', dest='root_dir', help='root dir', default='./')
 	
 	return arg_parser.parse_args()
 
