@@ -1,16 +1,7 @@
-# !/usr/bin/env python
-# coding=utf-8
-# http://my.oschina.net/leejun2005/blog/71444
-"""
-    简介：这是一个 python 写的轻量级的文件共享服务器（基于内置的SimpleHTTPServer模块），
-    支持文件上传下载，只要你安装了python（建议版本2.6~2.7，不支持3.x），
-    然后去到想要共享的目录下，执行：
-        python SimpleHTTPServerWithUpload.py
-    或者 python SimpleHTTPServerWithUpload.py filename
-"""
 """Simple HTTP Server With Upload.
 This module builds on BaseHTTPServer by implementing the standard GET
 and HEAD requests in a fairly straightforward manner.
+Python2.6 and 2.7 supported, python 3.x not.
 """
 __version__ = "0.2"
 __all__ = ["SimpleHTTPRequestHandler"]

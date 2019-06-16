@@ -16,8 +16,8 @@ timeout = 10
 
 #for urllib.request.urlretrieve
 def reporthook(bnum,size,totsize):
-	if len(filesize)==0:
-		filesize.append(totsize)
+	#if len(filesize)==0:
+	#	filesize.append(totsize)
 	perc = 100 * bnum * size / totsize
 	print('%.2f%%' % perc )
 
@@ -47,5 +47,4 @@ with open(urlf,'r') as f:
 		print()
 		#print('over, spend time {:.3f}'.format(time.time()-start)) 
 	end_dw = time.time()	
-	f.close()
 print('over, spend total time:{:.3f}'.format(end_dw-start_dw))

@@ -1,9 +1,9 @@
-#pragma once
-#include<stdlib.h>
-#include<string.h>
-#include<stdio.h>
+#ifndef HFC_H
+#define HFC_H
 
-
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 typedef struct {
 	unsigned char val;
@@ -19,8 +19,8 @@ typedef struct {
 
 typedef char** HuffmanCode;
 
+//select 2 nodes with smallest weight and 0 parent in HT[1..n]
 void select(HuffmanTree &HT, int n, int &s1, int &s2) {
-	//select 2 nodes of smallest weight and 0 parent in HT[1..n]
 	s1 = 0;
 	s2 = 0;
 	for (int i = 1; i <= n; ++i) {
@@ -40,14 +40,14 @@ void select(HuffmanTree &HT, int n, int &s1, int &s2) {
 void huffmanCoding(HuffmanTree &HT, HuffmanCode &HC, MWP w, int n) {
 	//w is the pointer to weights of n characters, construct HuffmanTree HT, get code HC
 	if (n <= 1)
-		exit(0);
+		exit(1);
 
 	int m = n * 2 - 1;
 
 	HT = (HuffmanTree)malloc((m + 1) * sizeof(HTNODE)); //not using 0
 	if (HT == NULL) {
 		printf("HuffmanTree memory error\n");
-		exit(1);
+		exit(-1);
 	}
 
 	int j;
@@ -72,13 +72,13 @@ void huffmanCoding(HuffmanTree &HT, HuffmanCode &HC, MWP w, int n) {
 	HC = (HuffmanCode)malloc((n + 1) * sizeof(char*));
 	if (HC == NULL) {
 		printf("HuffmanCode memory error\n");
-		exit(2);
+		exit(-1);
 	}
 
 	char* cd = (char*)malloc(n * sizeof(char));
 	if (cd == NULL) {
 		printf("coding memory error\n");
-		exit(3);
+		exit(-1);
 	}
 
 	cd[n - 1] = '\0';
@@ -94,9 +94,11 @@ void huffmanCoding(HuffmanTree &HT, HuffmanCode &HC, MWP w, int n) {
 		HC[i] = (char*)malloc((n - start) * sizeof(char));
 		if (HC[i] == NULL) {
 			printf("HC[%d] memory error\n", i);
-			exit(4);
+			exit(-1);
 		}
-		strcpy_s(HC[i], n - start, &cd[start]);
+        STRCPY(HC[i], &cd[start]);
 	}
 	free(cd);
 }
+
+#endif
