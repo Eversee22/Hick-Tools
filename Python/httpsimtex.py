@@ -5,6 +5,7 @@ import sys
 import socket
 import re
 import argparse
+import time
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -54,6 +55,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		for word in words:
 			path = os.path.join(path, word)
 		with open(os.path.join(path, 'simtex'), 'ab') as f:
+			f.write(time.strftime('%Y-%m-%d %H:%M').encode('utf-8'))
 			f.write(b'-'*10)
 			f.write(b'\n')
 			preline = self.rfile.readline()
@@ -64,7 +66,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 				line = self.rfile.readline()
 				content_length -= len(line)
 				if boundary in line:
-					preline = preline[:-1]
+					# preline = preline[:-1]
 					# if preline.endswith(b'\r'):
 						# preline = preline[:-1]
 					f.write(preline)
