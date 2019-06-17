@@ -64,6 +64,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 	def do_HEAD(self):
 		"""Serve a HEAD request."""
 		self.send_head()
+		if f:
+			f.close()
 	
 	def do_POST(self):
 		r, info = self.deal_post_data()
