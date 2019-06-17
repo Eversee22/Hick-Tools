@@ -2,7 +2,7 @@ import os, sys, posixpath, html, shutil
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 from urllib import parse
-from io import BytesIO, StringIO
+from io import BytesIO, StringIO, BufferedReader
 import time
 import mimetypes
 import re
@@ -14,6 +14,7 @@ import argparse
 __version__ = '1.0'
 osType = platform.system()
 charencoding = 'gbk'
+block_s = 2**29 # 512 MB
 
 def parse_arg():
 	arg_parser = argparse.ArgumentParser()
@@ -40,9 +41,25 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 	
 	
 	def do_GET(self):
-		bytes = self.send_head()
-		if bytes:
-			self.wfile.write(bytes)
+		f = self.send_head()
+		if f:
+			if isinstance(f, StringIO):
+				bytes = f.getvalue().encode(charencoding)
+				self.wfile.write(bytes)
+			elif isinstance(f, BufferedReader):
+				f.seek(0,2)
+				file_s = f.tell()
+				f.seek(0)
+				read_s = 0
+				bytes = f.read(block_s)
+				read_s += len(bytes)
+				while len(bytes) > 0:
+					self.wfile.write(bytes)
+					print('down {:.1f}%'.format(read_s/file_s*100))
+					bytes = f.read(block_s)
+					read_s += len(bytes)
+			f.close()
+			
 		
 	def do_HEAD(self):
 		"""Serve a HEAD request."""
@@ -62,9 +79,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 			f.write("<strong>Failed:</strong>")
 		f.write(info)
 		f.write("<br><a href=\"%s\">back</a>" % self.headers['referer'])
-		f.write("<hr><small>Powered By: bones7456, check new version at ")
-		f.write("<a href=\"http://li2z.cn/?s=SimpleHTTPServerWithUpload\">")
-		f.write("here</a>.</small></body>\n</html>\n")
+		# f.write("<hr><small>Powered By: bones7456, check new version at ")
+		# f.write("<a href=\"http://li2z.cn/?s=SimpleHTTPServerWithUpload\">")
+		f.write("</body>\n</html>\n")
 		length = f.tell()
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
@@ -81,12 +98,16 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		remainbytes = int(self.headers['Content-Length'])
 		line = self.rfile.readline()
 		remainbytes -= len(line)
+		# print(line)
 		if not boundary in line:
 			return (False, "Content not begin with boundary.")
 		line = self.rfile.readline()
 		remainbytes -= len(line)
+		# print(line)
 		fn = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', line.decode('utf-8'))
-		if not fn:
+		# print('filename:',fn)
+		if not fn or len(fn[0]) == 0:
+			# print(self.rfile.read())
 			return (False, "Can't find out file name ...")
 		path = self.translate_path(self.path)
 		try:
@@ -96,31 +117,56 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 				fn = os.path.join(path, fn[0])
 		except Exception as e:
 			return (False, e)
+		
+		try:
+			base, suf = fn.split('.')
+		except ValueError:
+			base = fn
+			suf = ''
 		while  os.path.exists(fn):
-			fn += "_"
+			base += '_'
+			fn = base+'.'+suf
+			
 		for i in range(2):
 			line = self.rfile.readline()
 			remainbytes -= len(line)
+			# print(line)
+			
 		try:
 			out = open(fn, 'wb')
 		except IOError:
 			return (False, "Can't create file to write, do you have permission to write?")
+		
 		preline = self.rfile.readline()
+		# file_s = remainbytes - len(boundary)
 		remainbytes -= len(preline)
-		print(preline)
+		# print(preline)
+		# print('file size:',file_s)
+		read_s = 0
+		# block_c = 1
 		while remainbytes > 0:
 			line = self.rfile.readline()
 			remainbytes -= len(line)
 			if boundary in line:
+				# print(line)
 				preline = preline[:-1]
 				if preline.endswith(b'\r'):
 					preline = preline[:-1]
 				out.write(preline)
+				read_s += len(preline)
+				# print('up {:.2f}%'.format(read_s/file_s*100))
 				out.close()
-				return (True, "File '%s' upload success!" % fn)
+				# print('read size:', read_s)
+				print('remainbytes:',remainbytes)
+				return (True, "File '%s' upload success, size: %d bytes" % (fn, read_s))
 			else:
 				out.write(preline)
+				read_s += len(preline)
+				# if int(read_s / file_s * 100) > block_c * 20:
+				# print('up {:.2f}%'.format(read_s/file_s*100))
+				# block_c += 1
 				preline = line
+		
 		return (False, "Unexpect Ends of data.")
 		
 	def translate_path(self, path):
@@ -155,6 +201,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		f.write("<hr>\n")
 		f.write("<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
 		f.write("<input name=\"file\" type=\"file\"/>")
+		# f.write("<input name=\"simtex\" type=\"text\"/>")
 		f.write("<input type=\"submit\" value=\"upload\"/>")
 		f.write("              ")
 		f.write("<input type=\"button\" value=\"HomePage\" onClick=\"location='/'\">")
@@ -215,10 +262,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 					hp = True
 					break
 			if not hp:
-				stringio = self.list_directory(path)
-				bytes = stringio.getvalue().encode(charencoding)
-				stringio.close()
-				return bytes
+				# stringio = self.list_directory(path)
+				# bytes = stringio.getvalue().encode(charencoding)
+				# stringio.close()
+				return self.list_directory(path)
 				
 		ctype = self.guess_type(path)
 		try:
@@ -233,10 +280,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
 		self.end_headers()
 		
-		bytes = f.read()
-		f.close()
+		# bytes = f.read()
+		# f.close()
         
-		return bytes
+		return f
 
 
 class ThreadingServer(ThreadingMixIn, HTTPServer):
