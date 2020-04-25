@@ -15,7 +15,7 @@ struct Client {
 int main(int argc, char **argv){
 	int					i, maxi, maxfd, listenfd, connfd, sockfd;
 	int					nready;
-    Client          	client[FD_SETSIZE];
+    	Client          	client[FD_SETSIZE];
 	ssize_t				n;
 	fd_set				rset, allset;
 	char				buf[MAXLINE];
