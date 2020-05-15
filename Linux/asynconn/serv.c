@@ -65,6 +65,7 @@ void doit(int i, int j, FILE* fp){
 			writen(sockj, "BYE\n", 4);
 			shutdown(socki, SHUT_WR);
 			shutdown(sockj, SHUT_WR);
+            fflush(fp);
 			break;
 		}
 	}
@@ -168,6 +169,7 @@ int main(int argc, char **argv){
 			continue;
 		}
 		printf("paired\n");
+        fflush(fp);
 		pid_t pid;
 		if ((pid = fork()) == 0) //child
             		{ 
