@@ -22,7 +22,8 @@ struct in_addr getipbyname(const char* name){
 }
 
 void encd(char* buf, int n){
-	for (int i = 0; i<n; i++){
+	int i;
+	for (i = 0; i<n; i++){
 		if (i%2 == 0)
 			buf[i] ^= a;
 		else
@@ -31,7 +32,8 @@ void encd(char* buf, int n){
 }
 
 void printb(unsigned char* buf, int n){
-	for(int i=0; i<n; ++i)
+	int i;
+	for(i=0; i<n; ++i)
 		printf("%02x", buf[i]);
 	printf("\n");
 }
