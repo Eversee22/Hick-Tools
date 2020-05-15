@@ -94,6 +94,7 @@ int main(int argc, char **argv){
 	
 	if (argc == 2)
 		strcpy(filename, argv[1]);
+    fp = fopen(filename, "w");
 	if (fp == NULL){
 		fp = stdout;
 	}
