@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os, sys, posixpath, html, shutil
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
@@ -647,7 +646,7 @@ def get_ip_address():
 		if sys.platform == 'win32':
 			myip = socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET, socket.SOCK_DGRAM)[-1][4][0]
 		else:
-			import fcntl
+			import fcntl,struct
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			myip = socket.inet_ntoa(fcntl.ioctl(
 				s.fileno(),
@@ -671,4 +670,3 @@ os.chdir(root_dir)
 httpd = ThreadingServer(serve_addr, SimpleHTTPRequestHandler)
 print('Listening ...', 'http://{}:{}'.format(myip, port))
 httpd.serve_forever()		
->>>>>>> 293ed8449bc632c48deea15339662d3a8dde1947
