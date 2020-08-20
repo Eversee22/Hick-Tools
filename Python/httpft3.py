@@ -10,6 +10,7 @@ import platform
 import socket
 import argparse
 # import importlib
+import struct
 
 __version__ = '1.0'
 osType = platform.system()
