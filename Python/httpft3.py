@@ -309,7 +309,7 @@ def get_ip_address():
 		if sys.platform == 'win32':
 			myip = socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET, socket.SOCK_DGRAM)[-1][4][0]
 		else:
-			import fcntl
+			import fcntl,struct
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			myip = socket.inet_ntoa(fcntl.ioctl(
 				s.fileno(),

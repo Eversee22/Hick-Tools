@@ -1,5 +1,6 @@
 #ifndef HICK_TOOLS_CAT_H
 #define HICK_TOOLS_CAT_H
+
 #include"win_common.h"
 #include<iostream>
 #include<string>
