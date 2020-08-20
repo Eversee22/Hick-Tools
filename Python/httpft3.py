@@ -351,7 +351,7 @@ import struct
 
 __version__ = '1.0'
 osType = platform.system()
-charencoding = 'gbk'
+charencoding = 'utf8'
 block_s = 2**29 # 512 MB
 
 def parse_arg():
