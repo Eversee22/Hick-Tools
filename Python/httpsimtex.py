@@ -90,23 +90,35 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		response.write(read_c)
 		self.wfile.write(response.getvalue())
 
-def get_ip_address():
-	try:
-		if sys.platform == 'win32':
-			myip = socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET, socket.SOCK_DGRAM)[-1][4][0]
-		else:
-			import fcntl
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			myip = socket.inet_ntoa(fcntl.ioctl(
-				s.fileno(),
-				0x8915,  # SIOCGIFADDR
-				struct.pack('256s', ifname[:15])
-			)[20:24])
-	except Exception as e:
-		print(e)
-		myip = "127.0.0.1"
-	
-	return myip
+def get_ip_address(ifname=None):
+    try:
+        if sys.platform == 'win32':
+            addrs = socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET, socket.SOCK_DGRAM)
+            for addr in addrs:
+                print(addr[4][0])
+            si = input('which to use: ')
+            if len(si) == 0:
+                i = -1
+            else:
+                i = int(si)
+            myip = addrs[i][4][0]
+        else:
+            import fcntl, struct
+            if ifname is None:
+                return "0.0.0.0"
+            if isinstance(ifname, str):
+                ifname = bytes(ifname, 'utf-8')
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            myip = socket.inet_ntoa(fcntl.ioctl(
+                s.fileno(),
+                0x8915,  # SIOCGIFADDR
+                struct.pack('256s', ifname[:15])
+            )[20:24])
+    except Exception as e:
+        print(e)
+        myip = "0.0.0.0"
+
+    return myip
 	
 def parse_arg():
 	arg_parser = argparse.ArgumentParser()
