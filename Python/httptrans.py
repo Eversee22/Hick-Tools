@@ -327,7 +327,7 @@ def get_ip_address(ifname=None):
         else:
             import fcntl, struct
             if ifname is None:
-                myip = "0.0.0.0"
+                return "0.0.0.0"
             if isinstance(ifname, str):
                 ifname = bytes(ifname, 'utf-8')
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
