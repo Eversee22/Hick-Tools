@@ -166,4 +166,4 @@ if __name__ == '__main__':
         print('URL needed !!!')
         sys.exit(1)
     url = sys.argv[1]
-    link_crawler(url,'\.cfg',max_depth=3,proxy='http://127.0.0.1:7890')
+    link_crawler(url,'.*',max_depth=3,proxy=None)
